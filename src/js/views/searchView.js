@@ -12,13 +12,17 @@ export const clearResults = () => {
 const limitRecipeTitle = (title, limit = 17) =>{
     const newTitle = [];
     if(title.length > limit){
+        // console.log(title.length)
         title.split(' ').reduce((acc, cur)=>{
             if(acc + cur.length <= limit)
             {
+                // console.log("reduce" + cur);
                 newTitle.push(cur);
             }
-        });
-        return newTitle;
+            return acc + cur.length;
+        }, 0);
+        // console.log(newTitle);
+        return `${newTitle.join(' ')} ...`;
     }
     return title;
 }
