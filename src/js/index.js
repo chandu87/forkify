@@ -2,6 +2,7 @@ import Search from "./models/Search";
 import Recipe from "./models/Recipe";
 import { elements, renderSpinner, clearSpinner } from "./views/base";
 import * as searchView from "./views/searchView";
+import * as recipeView from "./views/recipeView";
 /**Global state of the app
  * Search object
  * Current recipe object
@@ -41,12 +42,26 @@ elements.searchForm.addEventListener("submit", (e) => {
  * Recipe controller
  */
 
- const controlRecipe = () => {
-     const id = window.location.hash.replace('#','')
-     console.log(id)
- }
-  
- window.addEventListener('hashchange', controlRecipe)   
-const recipes = new Recipe(46956);
-recipes.getRecipe();
-console.log(recipes);
+const controlRecipe = async () => {
+  const id = window.location.hash.replace("#", "");
+  console.log(id);
+  if (id) {
+    recipeView.clearRecipeView();
+    state.recipe = new Recipe(id);
+    renderSpinner(elements.recipe)
+    try {
+      await state.recipe.getRecipe();
+      state.recipe.calculateTime();
+      state.recipe.calculateServings();
+      state.recipe.parseIngredients();
+      console.log(state.recipe);
+      recipeView.renderRecipe(state.recipe);
+      clearSpinner();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+};
+["hasChange", "load"].forEach((event) =>
+  window.addEventListener(event, controlRecipe)
+);
